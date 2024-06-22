@@ -24,8 +24,8 @@ data "aws_key_pair" "this" {
 #VPC
 ######
 resource "aws_vpc" "this" {
-  cidr_block       = var.cidr
-  instance_tenancy = "default"
+  cidr_block                       = var.cidr
+  instance_tenancy                 = "default"
   assign_generated_ipv6_cidr_block = true
 
   tags = merge(

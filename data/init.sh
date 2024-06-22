@@ -147,4 +147,4 @@ sleep 15
 hostnamectl set-hostname warden
 
 # Force reboot
-shutdown -r now
+# shutdown -r now

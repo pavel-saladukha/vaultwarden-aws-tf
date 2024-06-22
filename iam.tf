@@ -29,34 +29,6 @@ EOF
   )
 }
 
-resource "aws_iam_policy" "eni" {
-  name        = "${var.resource_prefix}vw_attach_eni_policy"
-  description = "This policy is used to allow attach ENI to EC2 instance"
-
-  policy = jsonencode({
-    "Version" : "2012-10-17",
-    "Id" : "eni_ec2",
-    "Statement" : [
-      {
-        "Effect" : "Allow",
-        "Action" : [
-          "ec2:AttachNetworkInterface",
-          "ec2:DeleteNetworkInterface",
-          "ec2:DescribeNetworkInterfaces",
-          "ec2:DetachNetworkInterface"
-        ],
-        "Resource" : "*"
-      }
-    ]
-  })
-
-  tags = merge(
-    var.default_tags, {
-      Name = "${var.resource_prefix}vw_eni_policy"
-    }
-  )
-}
-
 resource "aws_iam_policy" "route53_dns" {
   name        = "${var.resource_prefix}vw_route53_dns_policy"
   description = "This policy is used to allow Certbot on EC2 instance generate short live Let's Encrypt SSL certificates"
@@ -150,9 +122,4 @@ resource "aws_iam_role_policy_attachment" "ec2_route53_dns" {
 resource "aws_iam_role_policy_attachment" "ec2_s3" {
   role       = aws_iam_role.this.name
   policy_arn = aws_iam_policy.s3.arn
-}
-
-resource "aws_iam_role_policy_attachment" "ec2_eni" {
-  role       = aws_iam_role.this.name
-  policy_arn = aws_iam_policy.eni.arn
 }
