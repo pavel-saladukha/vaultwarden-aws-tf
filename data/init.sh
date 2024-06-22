@@ -1,16 +1,5 @@
 #!/bin/bash
 
-# Part related to ENI is copied from https://github.com/eana/bitwarden-tf-aws
-# Determine the region
-AWS_DEFAULT_REGION="$(/opt/aws/bin/ec2-metadata -z | sed 's/placement: \(.*\).$/\1/')"
-export AWS_DEFAULT_REGION
-# Attach the ENI
-instance_id="$(/opt/aws/bin/ec2-metadata -i | cut -d' ' -f2)"
-aws ec2 attach-network-interface \
-    --instance-id "$instance_id" \
-    --device-index 1 \
-    --network-interface-id "${eni_id}"
-
 yum check-updates
 yum update -y
 amazon-linux-extras install -y epel
@@ -23,7 +12,7 @@ yum install -y docker
 usermod -aG docker ec2-user
 systemctl enable docker.service
 systemctl start docker.service
-export ENV_DOCKER_COMPOSE_VERSION="v2.2.3"
+export ENV_DOCKER_COMPOSE_VERSION="v2.28.0"
 curl -L "https://github.com/docker/compose/releases/download/$ENV_DOCKER_COMPOSE_VERSION/docker-compose-linux-x86_64" -o /usr/local/bin/docker-compose
 chmod a+x /usr/local/bin/docker-compose
 ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
@@ -152,6 +141,8 @@ if [[ -f $home_dir/latest.tar.gz ]]
 fi
 
 docker-compose -f $home_dir/docker-compose.yml up -d
+
+sleep 15
 
 hostnamectl set-hostname warden
 

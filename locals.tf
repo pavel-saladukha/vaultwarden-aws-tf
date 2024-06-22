@@ -1,7 +1,7 @@
 locals {
-  full_domain_name    = format("%s.%s", var.domain_name_prefix, var.hosted_zone)
-  configs_bucket_name = format("%s-configs-bucket", var.s3_bucket_name_prefix)
-  backups_bucket_name = format("%s-backups-bucket", var.s3_bucket_name_prefix)
+  full_domain_name    = format("${var.resource_prefix}%s.%s", var.domain_name_prefix, var.hosted_zone)
+  configs_bucket_name = format("${var.resource_prefix}%s-configs-bucket", var.s3_bucket_name_prefix)
+  backups_bucket_name = format("${var.resource_prefix}%s-backups-bucket", var.s3_bucket_name_prefix)
 
   asg_tags = concat([
     for key, value in var.default_tags : {
@@ -12,7 +12,7 @@ locals {
     ], [
     {
       key                 = "Name"
-      value               = "vw-asg"
+      value               = "${var.resource_prefix}vw-asg"
       propagate_at_launch = true
     }
     ]

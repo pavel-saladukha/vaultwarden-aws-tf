@@ -1,10 +1,10 @@
 resource "aws_iam_instance_profile" "this" {
-  name = "ec2_instance_profile"
+  name = "${var.resource_prefix}ec2_instance_profile"
   role = aws_iam_role.this.name
 }
 
 resource "aws_iam_role" "this" {
-  name = "vw_ec2_instance_role"
+  name = "${var.resource_prefix}vw_ec2_instance_role"
 
   assume_role_policy = <<EOF
 {
@@ -24,13 +24,13 @@ EOF
 
   tags = merge(
     var.default_tags, {
-      Name = "vw_ec2_instance_role"
+      Name = "${var.resource_prefix}vw_ec2_instance_role"
     }
   )
 }
 
 resource "aws_iam_policy" "eni" {
-  name        = "vw_attach_eni_policy"
+  name        = "${var.resource_prefix}vw_attach_eni_policy"
   description = "This policy is used to allow attach ENI to EC2 instance"
 
   policy = jsonencode({
@@ -52,13 +52,13 @@ resource "aws_iam_policy" "eni" {
 
   tags = merge(
     var.default_tags, {
-      Name = "vw_eni_policy"
+      Name = "${var.resource_prefix}vw_eni_policy"
     }
   )
 }
 
 resource "aws_iam_policy" "route53_dns" {
-  name        = "vw_route53_dns_policy"
+  name        = "${var.resource_prefix}vw_route53_dns_policy"
   description = "This policy is used to allow Certbot on EC2 instance generate short live Let's Encrypt SSL certificates"
 
   policy = jsonencode({
@@ -89,13 +89,13 @@ resource "aws_iam_policy" "route53_dns" {
 
   tags = merge(
     var.default_tags, {
-      Name = "vw_route53_dns_policy"
+      Name = "${var.resource_prefix}vw_route53_dns_policy"
     }
   )
 }
 
 resource "aws_iam_policy" "s3" {
-  name        = "vw_s3_policy"
+  name        = "${var.resource_prefix}vw_s3_policy"
   description = "This policy is used to allow EC2 instance connect to S3 bucket to save backups and get configuration files"
 
   policy = jsonencode({
@@ -137,7 +137,7 @@ resource "aws_iam_policy" "s3" {
 
   tags = merge(
     var.default_tags, {
-      Name = "vw_s3_policy"
+      Name = "${var.resource_prefix}vw_s3_policy"
     }
   )
 }

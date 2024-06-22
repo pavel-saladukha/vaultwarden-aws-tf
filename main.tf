@@ -42,7 +42,7 @@ resource "aws_subnet" "this" {
 
   tags = merge(
     var.default_tags, {
-      Name = format("vw-sbn-%s", var.aval_zone)
+      Name = format("${var.resource_prefix}vw-sbn-%s", var.aval_zone)
     }
   )
 }
@@ -53,7 +53,7 @@ resource "aws_internet_gateway" "this" {
 
   tags = merge(
     var.default_tags, {
-      Name = "vw-gateway"
+      Name = "${var.resource_prefix}vw-gateway"
     }
   )
 }
@@ -68,7 +68,7 @@ resource "aws_default_route_table" "this" {
 
   tags = merge(
     var.default_tags, {
-      Name = "vw-route-table",
+      Name = "${var.resource_prefix}vw-route-table",
     }
   )
 }

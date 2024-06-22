@@ -1,6 +1,6 @@
 resource "aws_security_group" "public_ssh" {
 
-  name        = "ssh"
+  name        = "${var.resource_prefix}ssh"
   description = "Allow ssh connectivity to host"
   vpc_id      = aws_vpc.this.id
 
@@ -21,7 +21,7 @@ resource "aws_security_group" "public_ssh" {
 
 resource "aws_security_group" "public_https" {
 
-  name        = "https"
+  name        = "${var.resource_prefix}https"
   description = "Allow https connectivity to host"
   vpc_id      = aws_vpc.this.id
 
@@ -35,14 +35,14 @@ resource "aws_security_group" "public_https" {
 
   tags = merge(
     var.default_tags, {
-      Name = "public-https",
+      Name = "${var.resource_prefix}public-https",
     }
   )
 }
 
 resource "aws_security_group" "public_http" {
 
-  name        = "http"
+  name        = "${var.resource_prefix}http"
   description = "Allow http connectivity to host"
   vpc_id      = aws_vpc.this.id
 
@@ -56,13 +56,13 @@ resource "aws_security_group" "public_http" {
 
   tags = merge(
     var.default_tags, {
-      Name = "public-http",
+      Name = "${var.resource_prefix}public-http",
     }
   )
 }
 
 resource "aws_security_group" "vpc_traffic" {
-  name        = "vpc-traffic"
+  name        = "${var.resource_prefix}vpc-traffic"
   description = "Allow all VPC traffic"
   vpc_id      = aws_vpc.this.id
 
@@ -90,7 +90,7 @@ resource "aws_security_group" "vpc_traffic" {
 
   tags = merge(
     var.default_tags, {
-      Name = "private-vpc-traffic",
+      Name = "${var.resource_prefix}private-vpc-traffic",
     }
   )
 }
