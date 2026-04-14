@@ -28,6 +28,9 @@ yum check-update
 yum update -y
 
 yum install -y jq tree git python3-devel
+yum install -y cronie
+systemctl enable crond
+systemctl start crond
 
 # Docker and docker-compose
 yum update -y
@@ -96,7 +99,7 @@ EOF
 cat >> /etc/cron.d/backup-vaultwarden.tmp << 'EOF'
 SHELL=/bin/bash
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
-0 1 * * * ec2-user bash $scripts_path/backup.sh &> /dev/null 2>&1
+0 1 * * * ec2-user bash $scripts_path/backup.sh >> /var/log/vaultwarden-backup.log 2>&1
 EOF
 envsubst < /etc/cron.d/backup-vaultwarden.tmp > /etc/cron.d/backup-vaultwarden
 rm /etc/cron.d/backup-vaultwarden.tmp
@@ -116,7 +119,7 @@ chmod a+x $scripts_path/update.sh
 cat >> /etc/cron.d/maintenance.tmp << 'EOF'
 SHELL=/bin/bash
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
-0 3 * */ * root bash $scripts_path/maintenance.sh &> /dev/null 2>&1
+0 3 * * * root bash $scripts_path/maintenance.sh >> /var/log/vaultwarden-maintenance.log 2>&1
 EOF
 envsubst < /etc/cron.d/maintenance.tmp > /etc/cron.d/maintenance
 rm /etc/cron.d/maintenance.tmp
@@ -126,7 +129,7 @@ chmod a+x $scripts_path/maintenance.sh
 cat >> /etc/cron.d/renew-certs << 'EOF'
 SHELL=/bin/bash
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
-0 4 * */ * root certbot renew &> /dev/null 2>&1
+0 4 * * * root certbot renew >> /var/log/vaultwarden-certbot.log 2>&1
 EOF
 
 #  Gracefully shutdown the app if the instance is scheduled for termination

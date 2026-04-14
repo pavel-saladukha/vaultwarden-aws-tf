@@ -18,7 +18,7 @@ mkdir -p backup/latest
 mkdir -p backup/$date_year/$date_month/$date_day
 cp backup-$date_full.tar.gz backup/backup-latest.tar.gz
 mv backup-$date_full.tar.gz backup/$date_year/$date_month/$date_day
-aws s3 mv --recursive backup s3://vw-backups-bucket --sse
+aws s3 mv --recursive backup s3://${s3_bucket_name} --sse
 
 rm -rf backup
 
