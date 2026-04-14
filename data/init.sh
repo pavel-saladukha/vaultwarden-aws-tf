@@ -119,7 +119,7 @@ chmod a+x $scripts_path/update.sh
 cat >> /etc/cron.d/maintenance.tmp << 'EOF'
 SHELL=/bin/bash
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
-0 3 * * * root bash $scripts_path/maintenance.sh >> /var/log/vaultwarden-maintenance.log 2>&1
+0 3 * * 0 root bash $scripts_path/maintenance.sh >> /var/log/vaultwarden-maintenance.log 2>&1
 EOF
 envsubst < /etc/cron.d/maintenance.tmp > /etc/cron.d/maintenance
 rm /etc/cron.d/maintenance.tmp
@@ -129,7 +129,7 @@ chmod a+x $scripts_path/maintenance.sh
 cat >> /etc/cron.d/renew-certs << 'EOF'
 SHELL=/bin/bash
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
-0 4 * * * root certbot renew >> /var/log/vaultwarden-certbot.log 2>&1
+0 4 1 */2 * root certbot renew >> /var/log/vaultwarden-certbot.log 2>&1
 EOF
 
 #  Gracefully shutdown the app if the instance is scheduled for termination

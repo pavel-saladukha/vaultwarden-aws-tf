@@ -1,24 +1,20 @@
 #!/bin/bash
+set -euo pipefail
+
 home_dir="/home/ec2-user"
 scripts_path="$home_dir/scripts"
 
-bash $scripts_path/update.sh
+# Apply OS updates first.
+bash "$scripts_path/update.sh"
 
-docker-compose -f $home_dir/docker-compose.yml down
+# backup.sh already handles compose down/up.
+bash "$scripts_path/backup.sh"
 
-bash $scripts_path/backup.sh
+# Truncate logs in place to preserve ownership and file handles.
+: > "$home_dir/nginx/access.log"
+: > "$home_dir/nginx/error.log"
+: > "$home_dir/vw-data/vaultwarden.log"
 
-rm $home_dir/nginx/access.log
-touch $home_dir/nginx/access.log
-
-rm $home_dir/nginx/error.log
-touch $home_dir/nginx/error.log
-
-chown -R ec2-user:ec2-user $home_dir
-
-rm $home_dir/vw-data/vaultwarden.log
-touch $home_dir/vw-data/vaultwarden.log
-
-docker-compose -f $home_dir/docker-compose.yml up -d
+chown -R ec2-user:ec2-user "$home_dir"
 
 shutdown -r now
