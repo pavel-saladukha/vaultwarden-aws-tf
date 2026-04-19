@@ -45,6 +45,11 @@ systemctl start docker.service
 curl -L "https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-linux-x86_64" -o /usr/local/bin/docker-compose
 chmod a+x /usr/local/bin/docker-compose
 ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+mkdir -p ~/.docker/cli-plugins
+ARCH=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')
+BUILDX_URL=$(curl -s https://api.github.com/repos/docker/buildx/releases/latest | grep "browser_download_url.*linux-$ARCH" | cut -d '"' -f 4)
+curl -L $BUILDX_URL -o ~/.docker/cli-plugins/docker-buildx
+chmod +x ~/.docker/cli-plugins/docker-buildx
 
 # Fail2Ban to minimize ddos and brute-force passwords
 git clone https://github.com/fail2ban/fail2ban.git --branch "$FAIL2BAN_VERSION"
