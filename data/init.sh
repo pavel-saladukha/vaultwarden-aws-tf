@@ -89,7 +89,6 @@ certbot certonly \
 	--domain ${full_domain_name} -m ${email_for_cert} \
 	--key-type ecdsa \
 	--agree-tos \
-	--staging \
 	--non-interactive --quiet ${enable_test_cert}
 
 # Crons

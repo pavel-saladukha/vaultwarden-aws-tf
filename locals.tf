@@ -7,6 +7,6 @@ locals {
   software_versions = {
     docker_compose_cli    = "v5.1.3"
     fail2ban_git_ref      = "1.1.0"
-    vaultwarden_image_tag = "1.34.3"
+    vaultwarden_image_tag = "1.35.7"
   }
 }
