@@ -89,7 +89,15 @@ s3_bucket_name_prefix = "vaultwarden-john-doe"
 access_key_name       = "john-doe-key"
 
 ```
-With current variables it will create URL `vautlwarden.example.org` with two S3 bucket `vaultwarden-backups-bucket` and `vaultwarden-configs-bucket` and will have proper SSL certificate for HTTPS.
+With current variables it will create URL `vaultwarden.example.org` with two S3 bucket `vaultwarden-backups-bucket` and `vaultwarden-configs-bucket` and will have proper SSL certificate for HTTPS.
+
+#### HTTPS (Let's Encrypt and Route 53)
+
+On first boot, [`data/init.sh`](./data/init.sh) installs Certbot and the `certbot-dns-route53` plugin, then runs `certbot certonly` with `--dns-route53` so validation uses the **DNS-01** challenge: Certbot creates `_acme-challenge` TXT records in your hosted zone. The EC2 instance profile attaches IAM policy [`aws_iam_policy.route53_dns`](./iam.tf) so those records can be created automatically (no manual DNS steps and no HTTP-01 listener required for issuance).
+
+The Route 53 DNS plugin waits for changes to complete using the Route 53 API (change `INSYNC` status) instead of a fixed propagation delay. The former `--dns-route53-propagation-seconds` option was deprecated and removed; it did not affect this plugin.
+
+`test_cert` in `terraform.tfvars` maps to Certbot's `--test-cert` (Let's Encrypt staging). Use it while debugging; set `false` for production. Renewal is handled by a root cron job that runs `certbot renew` (see the same init script).
 
 After everything is configured run next commands
 ```

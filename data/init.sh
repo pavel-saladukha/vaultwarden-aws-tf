@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Software versions — single source of truth: Terraform locals.software_versions
+DOCKER_COMPOSE_VERSION="${docker_compose_version}"
+FAIL2BAN_VERSION="${fail2ban_version}"
+
 token=$(curl --ipv6 -X PUT "http://[fd00:ec2::254]/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
 export ipv4=$(curl --ipv6 -H "X-aws-ec2-metadata-token: $token" http://[fd00:ec2::254]/latest/meta-data/public-ipv4)
 echo $ipv4
@@ -38,13 +42,12 @@ yum install -y docker
 usermod -aG docker ec2-user
 systemctl enable docker.service
 systemctl start docker.service
-export ENV_DOCKER_COMPOSE_VERSION="v2.29.1"
-curl -L "https://github.com/docker/compose/releases/download/$ENV_DOCKER_COMPOSE_VERSION/docker-compose-linux-x86_64" -o /usr/local/bin/docker-compose
+curl -L "https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-linux-x86_64" -o /usr/local/bin/docker-compose
 chmod a+x /usr/local/bin/docker-compose
 ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
 
 # Fail2Ban to minimize ddos and brute-force passwords
-git clone https://github.com/fail2ban/fail2ban.git --branch 1.1.0
+git clone https://github.com/fail2ban/fail2ban.git --branch "$FAIL2BAN_VERSION"
 cd fail2ban
 python3 setup.py build
 python3 setup.py install
@@ -77,10 +80,11 @@ yum install -y certbot
 yum update -y
 yum install -y certbot-dns-route53
 certbot certonly \
-	--dns-route53 --dns-route53-propagation-seconds 30 \
+	--dns-route53 \
 	--domain ${full_domain_name} -m ${email_for_cert} \
 	--key-type ecdsa \
 	--agree-tos \
+	--staging \
 	--non-interactive --quiet ${enable_test_cert}
 
 # Crons

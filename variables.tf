@@ -1,6 +1,6 @@
 variable "image_id" {
   type        = string
-  default     = "ami-066784287e358dad1"
+  default     = "ami-0c1e21d82fe9c9336"
   description = "The id of the machine image (AMI) to use for the server."
 }
 

@@ -36,12 +36,14 @@ resource "aws_launch_template" "this" {
 
   user_data = base64encode(
     templatefile("data/init.sh", {
-      full_domain_name = local.full_domain_name
-      email_for_cert   = var.email_for_cert
-      s3_configs       = aws_s3_bucket.config.bucket
-      s3_backups       = aws_s3_bucket.backup.bucket
-      enable_test_cert = var.test_cert ? "--test-cert" : ""
-      hosted_zone      = var.hosted_zone
+      full_domain_name       = local.full_domain_name
+      email_for_cert         = var.email_for_cert
+      s3_configs             = aws_s3_bucket.config.bucket
+      s3_backups             = aws_s3_bucket.backup.bucket
+      enable_test_cert       = var.test_cert ? "--test-cert" : ""
+      hosted_zone            = var.hosted_zone
+      docker_compose_version = local.software_versions.docker_compose_cli
+      fail2ban_version       = local.software_versions.fail2ban_git_ref
     })
   )
 

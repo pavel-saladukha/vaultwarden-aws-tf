@@ -99,8 +99,9 @@ resource "aws_s3_object" "docker_compose" {
   bucket = aws_s3_bucket.config.id
   key    = "docker-compose.yml"
   content = templatefile("data/docker-compose.yml", {
-    admin_token = random_string.admin-token.result,
-    full_url    = format("https://%s", local.full_domain_name)
+    admin_token           = random_string.admin-token.result,
+    full_url              = format("https://%s", local.full_domain_name),
+    vaultwarden_image_tag = local.software_versions.vaultwarden_image_tag
   })
   server_side_encryption = "AES256"
 }
