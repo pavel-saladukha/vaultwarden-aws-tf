@@ -1,8 +1,9 @@
 #!/bin/bash
 
-# Software versions — single source of truth: Terraform locals.software_versions
+# Software versions and hashes come from Terraform local.software.
+BUILDX_VERSION="${docker_buildx_version}"
 DOCKER_COMPOSE_VERSION="${docker_compose_version}"
-FAIL2BAN_VERSION="${fail2ban_version}"
+FAIL2BAN_COMMIT="${fail2ban_commit}"
 
 # DNS registration requires jq and envsubst even on a minimal AMI.
 yum install -y jq gettext || exit 1
@@ -45,18 +46,35 @@ yum install -y docker
 usermod -aG docker ec2-user
 systemctl enable docker.service
 systemctl start docker.service
-curl -L "https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-linux-x86_64" -o /usr/local/bin/docker-compose
-chmod a+x /usr/local/bin/docker-compose
+DOCKER_COMPOSE_SHA256="${docker_compose_checksum}"
+DOCKER_COMPOSE_DOWNLOAD=$(mktemp) || exit 1
+trap 'rm -f "$DOCKER_COMPOSE_DOWNLOAD"' EXIT
+curl -fL --retry 3 --retry-delay 2 "https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-linux-x86_64" -o "$DOCKER_COMPOSE_DOWNLOAD" || exit 1
+printf '%s  %s\n' "$DOCKER_COMPOSE_SHA256" "$DOCKER_COMPOSE_DOWNLOAD" | sha256sum --check --status || exit 1
+install -m 0755 "$DOCKER_COMPOSE_DOWNLOAD" /usr/local/bin/docker-compose || exit 1
+rm -f "$DOCKER_COMPOSE_DOWNLOAD"
+trap - EXIT
 ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
-mkdir -p ~/.docker/cli-plugins
-ARCH=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')
-BUILDX_URL=$(curl -s https://api.github.com/repos/docker/buildx/releases/latest | grep "browser_download_url.*linux-$ARCH" | cut -d '"' -f 4)
-curl -L $BUILDX_URL -o ~/.docker/cli-plugins/docker-buildx
-chmod +x ~/.docker/cli-plugins/docker-buildx
+# Cloud-init runs as root; install Buildx system-wide for ec2-user as well.
+mkdir -p /usr/local/lib/docker/cli-plugins
+BUILDX_SHA256="${docker_buildx_checksum}"
+BUILDX_URL="https://github.com/docker/buildx/releases/download/$BUILDX_VERSION/buildx-$BUILDX_VERSION.linux-amd64"
+BUILDX_DOWNLOAD=$(mktemp) || exit 1
+trap 'rm -f "$BUILDX_DOWNLOAD"' EXIT
+curl -fL --retry 3 --retry-delay 2 "$BUILDX_URL" -o "$BUILDX_DOWNLOAD" || exit 1
+printf '%s  %s\n' "$BUILDX_SHA256" "$BUILDX_DOWNLOAD" | sha256sum --check --status || exit 1
+install -m 0755 "$BUILDX_DOWNLOAD" /usr/local/lib/docker/cli-plugins/docker-buildx || exit 1
+rm -f "$BUILDX_DOWNLOAD"
+trap - EXIT
+docker buildx version || exit 1
+sudo -u ec2-user docker buildx version || exit 1
 
 # Fail2Ban to minimize ddos and brute-force passwords
-git clone https://github.com/fail2ban/fail2ban.git --branch "$FAIL2BAN_VERSION"
-cd fail2ban
+git init fail2ban || exit 1
+cd fail2ban || exit 1
+git remote add origin https://github.com/fail2ban/fail2ban.git || exit 1
+git fetch --depth 1 origin "$FAIL2BAN_COMMIT" || exit 1
+git checkout --detach "$FAIL2BAN_COMMIT" || exit 1
 python3 setup.py build
 python3 setup.py install
 cp ./build/fail2ban.service /etc/systemd/system/fail2ban.service
