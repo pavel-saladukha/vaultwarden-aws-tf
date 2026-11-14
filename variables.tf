@@ -1,7 +1,7 @@
 variable "image_id" {
   type        = string
-  default     = "ami-0c1e21d82fe9c9336"
-  description = "The id of the machine image (AMI) to use for the server."
+  default     = null
+  description = "Optional AMI ID. The default uses the recorded Amazon Linux 2023 image in us-east-1."
 }
 
 variable "instance_type" {
@@ -62,4 +62,10 @@ variable "access_key_name" {
 variable "resource_prefix" {
   type    = string
   default = ""
+}
+
+variable "repository_release" {
+  type        = string
+  default     = null
+  description = "Optional Amazon Linux 2023 repository release. Match it to the selected AMI."
 }

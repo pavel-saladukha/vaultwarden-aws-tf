@@ -81,10 +81,19 @@ resource "aws_s3_object" "backup_script" {
   server_side_encryption = "AES256"
 }
 
+resource "aws_s3_object" "restore_script" {
+  bucket                 = aws_s3_bucket.config.id
+  key                    = "restore.sh"
+  source                 = "data/scripts/restore.sh"
+  source_hash            = filesha256("data/scripts/restore.sh")
+  server_side_encryption = "AES256"
+}
+
 resource "aws_s3_object" "notifier" {
   bucket                 = aws_s3_bucket.config.id
   key                    = "AWS_SpotTerminationNotifier.sh"
   source                 = "data/AWS_SpotTerminationNotifier.sh"
+  source_hash            = filesha256("data/AWS_SpotTerminationNotifier.sh")
   server_side_encryption = "AES256"
 }
 
@@ -92,6 +101,7 @@ resource "aws_s3_object" "maint-script" {
   bucket                 = aws_s3_bucket.config.id
   key                    = "maintenance.sh"
   source                 = "data/scripts/maintenance.sh"
+  source_hash            = filesha256("data/scripts/maintenance.sh")
   server_side_encryption = "AES256"
 }
 
@@ -130,6 +140,7 @@ resource "aws_s3_object" "update_script" {
   bucket                 = aws_s3_bucket.config.id
   key                    = "update.sh"
   source                 = "data/scripts/update.sh"
+  source_hash            = filesha256("data/scripts/update.sh")
   server_side_encryption = "AES256"
 }
 
@@ -137,6 +148,7 @@ resource "aws_s3_object" "warden_jail" {
   bucket                 = aws_s3_bucket.config.id
   key                    = "vaultwarden-jail.conf"
   source                 = "data/fail2ban/vaultwarden-jail.conf"
+  source_hash            = filesha256("data/fail2ban/vaultwarden-jail.conf")
   server_side_encryption = "AES256"
 }
 
@@ -144,6 +156,7 @@ resource "aws_s3_object" "warden_filter" {
   bucket                 = aws_s3_bucket.config.id
   key                    = "vaultwarden-filter.conf"
   source                 = "data/fail2ban/vaultwarden-filter.conf"
+  source_hash            = filesha256("data/fail2ban/vaultwarden-filter.conf")
   server_side_encryption = "AES256"
 }
 
@@ -151,6 +164,7 @@ resource "aws_s3_object" "warden_admin_jail" {
   bucket                 = aws_s3_bucket.config.id
   key                    = "vaultwarden-admin-jail.conf"
   source                 = "data/fail2ban/vaultwarden-admin-jail.conf"
+  source_hash            = filesha256("data/fail2ban/vaultwarden-admin-jail.conf")
   server_side_encryption = "AES256"
 }
 
@@ -158,6 +172,7 @@ resource "aws_s3_object" "warden_admin_filter" {
   bucket                 = aws_s3_bucket.config.id
   key                    = "vaultwarden-admin-filter.conf"
   source                 = "data/fail2ban/vaultwarden-admin-filter.conf"
+  source_hash            = filesha256("data/fail2ban/vaultwarden-admin-filter.conf")
   server_side_encryption = "AES256"
 }
 
@@ -165,6 +180,7 @@ resource "aws_s3_object" "nginx_bot_jail" {
   bucket                 = aws_s3_bucket.config.id
   key                    = "nginx-botsearch-jail.conf"
   source                 = "data/fail2ban/nginx-botsearch-jail.conf"
+  source_hash            = filesha256("data/fail2ban/nginx-botsearch-jail.conf")
   server_side_encryption = "AES256"
 }
 
@@ -172,6 +188,7 @@ resource "aws_s3_object" "nginx_http_auth_jail" {
   bucket                 = aws_s3_bucket.config.id
   key                    = "nginx-http-auth-jail.conf"
   source                 = "data/fail2ban/nginx-http-auth-jail.conf"
+  source_hash            = filesha256("data/fail2ban/nginx-http-auth-jail.conf")
   server_side_encryption = "AES256"
 }
 
@@ -179,6 +196,7 @@ resource "aws_s3_object" "nginx_301_jail" {
   bucket                 = aws_s3_bucket.config.id
   key                    = "nginx-301-jail.conf"
   source                 = "data/fail2ban/nginx-301-jail.conf"
+  source_hash            = filesha256("data/fail2ban/nginx-301-jail.conf")
   server_side_encryption = "AES256"
 }
 
@@ -186,6 +204,7 @@ resource "aws_s3_object" "nginx_301_filter" {
   bucket                 = aws_s3_bucket.config.id
   key                    = "nginx-301-filter.conf"
   source                 = "data/fail2ban/nginx-301-filter.conf"
+  source_hash            = filesha256("data/fail2ban/nginx-301-filter.conf")
   server_side_encryption = "AES256"
 }
 
@@ -193,6 +212,7 @@ resource "aws_s3_object" "nginx_400_jail" {
   bucket                 = aws_s3_bucket.config.id
   key                    = "nginx-400-jail.conf"
   source                 = "data/fail2ban/nginx-400-jail.conf"
+  source_hash            = filesha256("data/fail2ban/nginx-400-jail.conf")
   server_side_encryption = "AES256"
 }
 
@@ -200,6 +220,7 @@ resource "aws_s3_object" "nginx_400_filter" {
   bucket                 = aws_s3_bucket.config.id
   key                    = "nginx-400-filter.conf"
   source                 = "data/fail2ban/nginx-400-filter.conf"
+  source_hash            = filesha256("data/fail2ban/nginx-400-filter.conf")
   server_side_encryption = "AES256"
 }
 
@@ -207,6 +228,7 @@ resource "aws_s3_object" "nginx_404_jail" {
   bucket                 = aws_s3_bucket.config.id
   key                    = "nginx-404-jail.conf"
   source                 = "data/fail2ban/nginx-404-jail.conf"
+  source_hash            = filesha256("data/fail2ban/nginx-404-jail.conf")
   server_side_encryption = "AES256"
 }
 
@@ -214,6 +236,7 @@ resource "aws_s3_object" "nginx_404_filter" {
   bucket                 = aws_s3_bucket.config.id
   key                    = "nginx-404-filter.conf"
   source                 = "data/fail2ban/nginx-404-filter.conf"
+  source_hash            = filesha256("data/fail2ban/nginx-404-filter.conf")
   server_side_encryption = "AES256"
 }
 

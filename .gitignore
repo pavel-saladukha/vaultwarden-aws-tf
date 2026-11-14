@@ -33,3 +33,7 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
+
+# Python bytecode and cache directories
+__pycache__/
+*.py[cod]

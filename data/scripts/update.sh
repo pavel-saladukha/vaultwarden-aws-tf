@@ -1,3 +1,4 @@
 #!/bin/bash
-yum check-update
-yum update -y
+set -euo pipefail
+# The repository release is fixed in /etc/dnf/vars/releasever during startup.
+dnf upgrade -y

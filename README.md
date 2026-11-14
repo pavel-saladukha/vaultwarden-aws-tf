@@ -1,6 +1,15 @@
 # vaultwarden-aws-tfs
 Self contained installation of [Vaultwarden](https://github.com/dani-garcia/vaultwarden) in AWS using Terraform.
 
+## System upgrade
+
+The selected versions and hashes are in `local.software` in [locals.tf](locals.tf).
+The default AMI is for `us-east-1`. Supply `image_id` for another Region.
+Use `repository_release` only with a matching Amazon Linux 2023 AMI.
+See [upgrade checks](UPGRADE_VERIFICATION.md) and the [test runbook](TEST_INSTANCE_RUNBOOK.md).
+Instance tests are pending. Use separate test resources before a production change.
+See the [script maintenance guide](docs/script-maintenance.md) for startup, backup, and restore changes.
+
 ## Features
 - HTTPS out from the box
 - fail2ban - to minimize risk from bruteforcing credentials

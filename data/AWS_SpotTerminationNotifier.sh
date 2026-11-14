@@ -1,21 +1,17 @@
 #!/bin/bash
-# AWS Instance Termination Notice Handler
-# Based on: https://blog.fugue.co/2015-01-06-spot-termination-notices.html
-
+# Check Spot termination notices with IMDSv2.
 set -euo pipefail
-
+metadata_url=http://169.254.169.254/latest
 while true; do
-    # get meta-data HTTP headers
-    HEADER=$(curl -Is http://169.254.169.254/latest/meta-data/spot/termination-time)
-
-    # HTTP 404 - not marked for termination
-    if [ -z $(echo "$HEADER" | head -1 | grep 404 | cut -d \  -f 2) ]; then
-        echo "Running shutdown hook."
-        docker-compose -f /home/ec2-user/docker-compose.yml down
+    token=$(curl --noproxy '*' -fsS --connect-timeout 3 --max-time 5 \
+        -X PUT "$metadata_url/api/token" -H 'X-aws-ec2-metadata-token-ttl-seconds: 60') || { sleep 5; continue; }
+    status=$(curl --noproxy '*' -sS --connect-timeout 3 --max-time 5 -o /dev/null -w '%{http_code}' \
+        -H "X-aws-ec2-metadata-token: $token" "$metadata_url/meta-data/spot/instance-action") || { sleep 5; continue; }
+    # Only a successful notice can trigger shutdown. Ignore authentication and network errors.
+    if [[ "$status" == 200 ]]; then
+        docker-compose -f /home/ec2-user/docker-compose.yml stop
         /home/ec2-user/scripts/backup.sh
         break
-    else
-        # Spot instance not yet marked for termination.
-        sleep 5
     fi
+    sleep 5
 done

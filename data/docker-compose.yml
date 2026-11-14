@@ -7,7 +7,7 @@ services:
       SHOW_PASSWORD_HINT: 'false'
       SIGNUPS_ALLOWED: 'false'
       INVITATIONS_ALLOWED: 'false'
-      WEBSOCKET_ENABLED: 'false'  # Enable WebSocket notifications.
+      ENABLE_WEBSOCKET: 'false'
       DISABLE_ADMIN_TOKEN: 'false'
       ADMIN_TOKEN: ${admin_token}
       DOMAIN: ${full_url}
@@ -17,13 +17,15 @@ services:
     volumes:
       - ./vw-data:/data
     ports:
-      - 8080:80
+      - 127.0.0.1:8080:80
 
   nginx:
     container_name: nginx
     build:
       context: ./nginx
     restart: always
+    depends_on:
+      - vaultwarden
     ports:
       - 80:80
       - 443:443
