@@ -4,6 +4,9 @@
 DOCKER_COMPOSE_VERSION="${docker_compose_version}"
 FAIL2BAN_VERSION="${fail2ban_version}"
 
+# DNS registration requires jq and envsubst even on a minimal AMI.
+yum install -y jq gettext || exit 1
+
 token=$(curl --ipv6 -X PUT "http://[fd00:ec2::254]/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
 export ipv4=$(curl --ipv6 -H "X-aws-ec2-metadata-token: $token" http://[fd00:ec2::254]/latest/meta-data/public-ipv4)
 echo $ipv4
