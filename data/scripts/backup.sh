@@ -1,6 +1,10 @@
 #!/bin/bash
+set -euo pipefail
 home_dir="/home/ec2-user"
-cd $home_dir
+cd "$home_dir"
+
+# Always restore service, including when backup creation or upload fails.
+trap 'docker-compose up -d' EXIT
 docker-compose down --volumes
 
 sqlite3 $home_dir/vw-data/db.sqlite3 ".backup '$home_dir/vw-data/backup.sqlite3'"
@@ -21,5 +25,3 @@ mv backup-$date_full.tar.gz backup/$date_year/$date_month/$date_day
 aws s3 mv --recursive backup s3://${s3_bucket_name} --sse
 
 rm -rf backup
-
-docker-compose up -d
