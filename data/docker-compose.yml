@@ -28,5 +28,6 @@ services:
       - 80:80
       - 443:443
     volumes:
+      - /etc/letsencrypt:/etc/letsencrypt:ro
       - /home/ec2-user/nginx/access.log:/var/log/nginx/access_file.log
       - /home/ec2-user/nginx/error.log:/var/log/nginx/error_file.log

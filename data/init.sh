@@ -158,7 +158,7 @@ chmod a+x $scripts_path/maintenance.sh
 cat >> /etc/cron.d/renew-certs << 'EOF'
 SHELL=/bin/bash
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
-0 4 1 */2 * root certbot renew >> /var/log/vaultwarden-certbot.log 2>&1
+0 4 * * * root certbot renew --deploy-hook "/usr/bin/docker-compose -f /home/ec2-user/docker-compose.yml exec -T nginx nginx -s reload" >> /var/log/vaultwarden-certbot.log 2>&1
 EOF
 
 #  Gracefully shutdown the app if the instance is scheduled for termination
@@ -171,8 +171,6 @@ nginx_config_path="$home_dir/nginx"
 mkdir -p $nginx_config_path
 touch $nginx_config_path/access.log
 touch $nginx_config_path/error.log
-cp /etc/letsencrypt/live/${full_domain_name}/privkey.pem $nginx_config_path/privkey.pem
-cp /etc/letsencrypt/live/${full_domain_name}/fullchain.pem $nginx_config_path/fullchain.pem
 aws s3 cp s3://${s3_configs}/nginx.conf $nginx_config_path/nginx.conf --sse
 aws s3 cp s3://${s3_configs}/Dockerfile $nginx_config_path/Dockerfile --sse
 aws s3 cp s3://${s3_configs}/docker-compose.yml $home_dir/docker-compose.yml --sse
